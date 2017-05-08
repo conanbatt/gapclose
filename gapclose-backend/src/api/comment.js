@@ -1,69 +1,65 @@
 import resource from 'resource-router-middleware';
 import mongoose from 'mongoose';
-import '../models/topic';
+import '../models/comment';
 import '../models/comment';
 
-const Topic = mongoose.model("Topic")
+const Comment = mongoose.model("comment")
 
 export default ({ config, db }) => resource({
 
 	/** Property name to store preloaded entity on `request`. */
-	id : 'topic',
+	id : 'comment',
 
 	/** For requests with an `id`, you can auto-load the entity.
 	 *  Errors terminate the request, success sets `req[id] = data`.
 	 */
 	load(req, id, callback) {
-		let topic = Topic.find({_id: id}, (err, ltopic) =>{
-      if(!ltopic){
+		let comment = Comment.find({_id: id}, (err, lcomment) =>{
+      if(!lcomment){
         res.status(404)
         res.json({message: "Not found"})
       } else {
-        callback(err, ltopic)
+        callback(err, lcomment)
       }
     }).populate({"path": 'arguments'});
-	},
-
-	/** GET / - List all entities */
-	index({ params }, res)   {
-    const topics = Topic.find({},(err, topics)=>{
-      res.json({topics: topics});
-    })
 	},
 
 	/** POST / - Create a new entity */
 	create({ body }, res) {
 
-    const topic = new Topic(body);
-    topic.update_at = new Date();
-    topic.save((err, stopic)=>{
+    const comment = new Comment(body);
+    comment.update_at = new Date();
+    comment.save((err, scomment)=>{
       if(err){
         res.status(400)
         res.json({err: err.toString()})
       } else {
-        res.json({topic: stopic});
+        res.json({comment: scomment});
       }
     })
 	},
 
+  /** PUT /:id - Update a given entity */
+  update({ comment, body }, res) {
+    for (let key in body) {
+      if (key!=='id') {
+        comment[key] = body[key];
+      }
+      comment.update_at = new Date();
+      comment.save((err, lcomment)=>{
+        if(err){
+          res.status(400)
+          res.json({err: err.toString()})
+        } else {
+          res.json({comment: lcomment})
+        }
+      })
+    }
+  },
+
 	/** GET /:id - Return a given entity */
-	read({ topic }, res) {
-    res.json({topic: topic})
+	read({ comment }, res) {
+    res.json({comment: comment})
 	},
 
-	/** PUT /:id - Update a given entity */
-	update({ topic, body }, res) {
-		for (let key in body) {
-			if (key!=='id') {
-				topic[key] = body[key];
-			}
-		}
-		res.sendStatus(204);
-	},
-
-	/** DELETE /:id - Delete a given entity */
-	delete({ topic }, res) {
-		topic.splice(topic.indexOf(topic), 1);
-		res.sendStatus(204);
-	}
 });

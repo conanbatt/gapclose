@@ -1,6 +1,8 @@
-import SimpleForm from '../components/SimpleForm.js';
+import SimpleForm from '../components/simple_form.js';
+import React from 'react';
+import Toggle from 'react-bootstrap-toggle';
 
-export default ({lines}) => (
+export default ({topic}) => (
   <div className="conversation">
   	<style jsx>{`
       .page-header {
@@ -9,7 +11,6 @@ export default ({lines}) => (
   	`}
   	</style>
     <div>
-      <h1 className="text-center page-header">Las vacaciones pagas son pagas por el empleador?</h1>
       <div className="row">
         <div className="col-md-6 col-lg-6 col-sm-6">
         <h3 className="text-success text-center "><u>Yes</u></h3>
@@ -27,52 +28,76 @@ export default ({lines}) => (
           40%
         </div>
       </div>*/}
-      { lines.map((line, i) => (
-        <div className="row">
+      { topic.comments.map((line, i) => (
+        <div className="row" key={i}>
           <div className={`${i%2 == 0 ? '' : 'col-md-offset-6 col-lg-offset-6 col-sm-offset-6' } col-md-6 col-lg-6 col-sm-6`}>
             <Bubble message={line}/>
           </div>
         </div>
       ))}
-      <div className="new row">
-        <div className="col-md-6 col-lg-6 col-sm-6">
-          <BubbleMaker side="Yes"/>
-        </div>
-        <div className="col-md-6 col-lg-6 col-sm-6">
-          <BubbleMaker side="No"/>
-        </div>
+      <div className="new">
+        <BubbleMaker/>
       </div>
     </div>
   </div>
 )
 
 
-const BubbleMaker = ({side}) => (
-  <div className="bubble_placeholder">
-    <style jsx>{`
-      .add_bubble:hover {
-          cursor: pointer;
-      }
-      .message {
-          resize: none;
-      }
-    `}</style>
-    <SimpleForm action="/api/conversation/1/bubble" onSuccess={ (vals)=> { console.log(e)}}>
-      <div className="panel panel-default add_bubble text-center" onClick={ (e)=>{
-        console.log("Clicked add bubble", side)
-      }}>
-        <div className="panel-body">
-          <textarea name="message" placeholder="I think that..." className="message form-control" resize={false}/>
-        </div>
-        <div className="panel-footer text-right">
-          <div className="btn-primary btn">
-            <span>Send</span>
+
+class BubbleMaker extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = { inFavor: true}
+  }
+
+  onToggle() {
+    this.setState({ inFavor: !this.state.toggleActive });
+  }
+
+  render(){
+    return(<div className="bubble_placeholder">
+      <style jsx>{`
+        .add_bubble:hover {
+            cursor: pointer;
+        }
+        .bootstrap-radio input {
+            display: none;
+        }
+
+        .message {
+            resize: none;
+        }
+      `}</style>
+      <SimpleForm action="/api/conversation/1/bubble" onSuccess={ (vals)=> { console.log(e)}}>
+        <div className="panel panel-default add_bubble text-center">
+          <div className="panel-body">
+            <div className="form-group">
+              <textarea name="message" placeholder="I think that..." className="message form-control"/>
+            </div>
+            <input type="hidden" value={this.state.inFavor} name="inFavor"/>
+            <div className="form-group text-left">
+              <Toggle
+                onClick={this.onToggle}
+                on={<h2>In Favor</h2>}
+                off={<h2>Against</h2>}
+                size="md"
+                offstyle="danger"
+                active={this.state.inFavor}
+              />
+            </div>
+          </div>
+          <div className="panel-footer text-right">
+            <div className="btn-primary btn">
+              <span>Send</span>
+            </div>
           </div>
         </div>
-      </div>
-    </SimpleForm>
-  </div>
-)
+      </SimpleForm>
+    </div>)
+  }
+
+}
 
 const Bubble = ({message}) => (
   <div className="bubble">

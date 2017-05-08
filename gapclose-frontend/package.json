@@ -2,9 +2,13 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js"
+    "start": "next start"
   },
-  "dependencies" : {
-  	"next": "latest"
+  "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
+    "next": "^2.3.1",
+    "react": "^15.5.4",
+    "react-bootstrap-toggle": "^2.0.6",
+    "react-dom": "^15.5.4"
   }
 }

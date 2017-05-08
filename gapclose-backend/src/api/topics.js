@@ -14,13 +14,8 @@ export default ({ config, db }) => resource({
 	 *  Errors terminate the request, success sets `req[id] = data`.
 	 */
 	load(req, id, callback) {
-		let topic = Topic.find({_id: id}, (err, ltopic) =>{
-      if(!ltopic){
-        res.status(404)
-        res.json({message: "Not found"})
-      } else {
-        callback(err, ltopic)
-      }
+		let topic = Topic.findOne({_id: id}, (err, ltopic) =>{
+      callback(err, ltopic)
     }).populate({"path": 'arguments'});
 	},
 
@@ -51,13 +46,4 @@ export default ({ config, db }) => resource({
     res.json({topic: topic})
 	},
 
-	/** PUT /:id - Update a given entity */
-	update({ topic, body }, res) {
-		res.status(400);
-	},
-
-	/** DELETE /:id - Delete a given entity */
-	delete({ topic }, res) {
-		res.status(400);
-	}
 });
