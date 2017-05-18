@@ -17,7 +17,11 @@ export default class extends React.Component {
     return <Layout>
       <div className="index">
         <div className="container">
-          <h1> Topics </h1>
+          <div className="jumbotron">
+            <h1>Debate, Discuss, Disentangle</h1>
+            <p>GapClose is a platform to have an organized online discussion, where the pros and cons of every argument can be organized, answered and re-utilized in all kinds of debates.</p>
+          </div>
+          <h2> Topics </h2>
           <ul>
           { this.props.topics.map((topic,i)=>{
             return(<li key={i}><Link prefetch href={`/topic?id=${topic._id}`}><a>{ topic.title }</a></Link></li>)

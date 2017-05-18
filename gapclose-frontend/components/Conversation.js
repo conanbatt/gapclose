@@ -52,7 +52,7 @@ class BubbleMaker extends React.Component {
   }
 
   onToggle() {
-    this.setState({ inFavor: !this.state.toggleActive });
+    this.setState({ inFavor: !this.state.inFavor });
   }
 
   render(){
@@ -78,9 +78,9 @@ class BubbleMaker extends React.Component {
             <input type="hidden" value={this.state.inFavor} name="inFavor"/>
             <div className="form-group text-left">
               <Toggle
-                onClick={this.onToggle}
-                on={<h2>In Favor</h2>}
-                off={<h2>Against</h2>}
+                onClick={(e)=> { this.onToggle()}}
+                on={<div>In Favor</div>}
+                off={<div>Against</div>}
                 size="md"
                 offstyle="danger"
                 active={this.state.inFavor}
@@ -88,9 +88,7 @@ class BubbleMaker extends React.Component {
             </div>
           </div>
           <div className="panel-footer text-right">
-            <div className="btn-primary btn">
-              <span>Send</span>
-            </div>
+            <input type="submit" className="btn-primary btn" value="Send" />
           </div>
         </div>
       </SimpleForm>

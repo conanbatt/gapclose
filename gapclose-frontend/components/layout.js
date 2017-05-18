@@ -8,7 +8,7 @@ export default ({ children, title = 'GapClose' }) => (
       <meta name="viewport" content="initial-scale=1.0, width=device-width"/>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
-      <link rel="stylesheet" href="node_modules/lib/bootstrap2-toggle.css"/>
+      <link rel="stylesheet" href="static/bootstrap2-toggle.css"/>
       <script src="https://code.jquery.com/jquery-3.2.1.slim.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </Head>
