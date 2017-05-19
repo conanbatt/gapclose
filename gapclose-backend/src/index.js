@@ -8,6 +8,12 @@ import middleware from './middleware';
 import api from './api';
 import config from './config.json';
 
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
+import passport from 'passport';
+import User from './models/user';
+import dotenv from 'dotenv'
+dotenv.config();
+
 let app = express();
 app.server = http.createServer(app);
 
@@ -23,6 +29,33 @@ app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
 
+app.use(passport.initialize({ session: false }))
+
+const jwtOptions = {
+  secretOrKey: process.env.JWT_SECRET,
+  jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+}
+
+passport.serializeUser(function(user, done) {
+  done(null, user.username);
+})
+
+passport.deserializeUser(function(username, done) {
+  User.findOne({ username: username })
+  .then((user) => {
+    return done(user)
+  })
+  .catch(done)
+})
+
+passport.use('jwt', new JwtStrategy(jwtOptions, (jwt_payload, done) => {
+  User.findOne({ username: jwt_payload.id })
+  .then(user => {
+    if(user) return done(null, user)
+    else return done(null, false)
+  })
+}))
+
 // connect to db
 initializeDb( db => {
 
@@ -34,7 +67,7 @@ initializeDb( db => {
 
 	app.server.listen(process.env.PORT || config.port);
 
-	console.log(`Started on port ${process.env.PORT || config.port}`);
+	console.log(`Started on port ${process.env.PORT}`);
 });
 
 export default app;

@@ -1,3 +1,5 @@
 ### To Start
 
-PORT=3003 npm run dev
+Config .env file (see .env.example)
+
+npm run dev
