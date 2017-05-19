@@ -1,24 +1,19 @@
-import SimpleForm from '../components/simple_form.js';
 import React from 'react';
 import Toggle from 'react-bootstrap-toggle';
+import 'isomorphic-fetch';
 
-export default ({topic}) => (
+export default ({topic, handleUpdates}) => (
   <div className="conversation">
   	<style jsx>{`
       .page-header {
           margin-top: 20px;
       }
+      .new {
+        padding: 0 20px;
+      }
   	`}
   	</style>
     <div>
-      <div className="row">
-        <div className="col-md-6 col-lg-6 col-sm-6">
-        <h3 className="text-success text-center "><u>Yes</u></h3>
-        </div>
-        <div className="col-md-6 col-lg-6 col-sm-6">
-          <h3 className="text-danger text-center "><u>No</u></h3>
-        </div>
-      </div>
       {/*<div className="progress">
         <div className="progress-bar pbar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style={{width: "60%"}}>
           60%
@@ -28,15 +23,12 @@ export default ({topic}) => (
           40%
         </div>
       </div>*/}
-      { topic.comments.map((line, i) => (
-        <div className="row" key={i}>
-          <div className={`${i%2 == 0 ? '' : 'col-md-offset-6 col-lg-offset-6 col-sm-offset-6' } col-md-6 col-lg-6 col-sm-6`}>
-            <Bubble message={line}/>
-          </div>
-        </div>
+      { topic.comments.filter(comm => !comm.parent).map((comment, i) => (
+        <Bubble topic={topic} comment={comment} handleUpdates={handleUpdates} key={i}/>
       ))}
       <div className="new">
-        <BubbleMaker/>
+        <h3> What do you think? </h3>
+        <BubbleMaker topic={topic} handleUpdates={handleUpdates}/>
       </div>
     </div>
   </div>
@@ -48,11 +40,39 @@ class BubbleMaker extends React.Component {
 
   constructor(props){
     super(props);
-    this.state = { inFavor: true}
+    let base = { inFavor: true }
+    if(props.comment){
+      base.parentId = props.comment._id
+    }
+    this.state = base;
   }
 
   onToggle() {
     this.setState({ inFavor: !this.state.inFavor });
+  }
+
+  onChange(event) {
+    const target = event.target;
+    const name = target.name;
+    const value = target.value;
+    this.setState({[name]: value})
+  }
+
+  onSubmit(e){
+    e.preventDefault()
+    fetch(`http://localhost:3003/api/topics/${this.props.topic._id}/comments`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept':  'application/json'
+      },
+      body: JSON.stringify(this.state)
+    }).then((response)=>{
+      return response.json()
+    }).then((json)=>{
+      console.log("response", json)
+      this.props.handleUpdates(json)
+    })
   }
 
   render(){
@@ -64,19 +84,18 @@ class BubbleMaker extends React.Component {
         .bootstrap-radio input {
             display: none;
         }
-
-        .message {
+        .content {
             resize: none;
+            height: 80px;
         }
       `}</style>
-      <SimpleForm action="/api/conversation/1/bubble" onSuccess={ (vals)=> { console.log(e)}}>
+      <form onSubmit={(e)=>this.onSubmit(e)}>
         <div className="panel panel-default add_bubble text-center">
           <div className="panel-body">
             <div className="form-group">
-              <textarea name="message" placeholder="I think that..." className="message form-control"/>
+              <textarea name="content" placeholder="I think that..." className="content form-control" onChange={(e)=>{this.onChange(e)}}/>
             </div>
-            <input type="hidden" value={this.state.inFavor} name="inFavor"/>
-            <div className="form-group text-left">
+            <div className="text-right">
               <Toggle
                 onClick={(e)=> { this.onToggle()}}
                 on={<div>In Favor</div>}
@@ -91,31 +110,90 @@ class BubbleMaker extends React.Component {
             <input type="submit" className="btn-primary btn" value="Send" />
           </div>
         </div>
-      </SimpleForm>
+      </form>
     </div>)
   }
 
 }
 
-const Bubble = ({message}) => (
-  <div className="bubble">
-    <style jsx>{`
-      .action {
-        margin-right: 5px;
-      }
-      .glyphicon {
-        margin-right: 2px;
-      }
-    `}</style>
-    <div className="panel panel-default">
-      <div className="panel-body">
-        { message }
+class Bubble extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = { showBubbleMaker: false };
+  }
+
+  handleReply(){
+    this.setState({ showBubbleMaker: !this.state.showBubbleMaker})
+  }
+
+  render(){
+
+    let { comment, topic, handleUpdates } = this.props;
+
+    return(<div className={`bubble ${comment.inFavor ? 'bg-success-light' : 'bg-danger-light'}`}>
+      <style jsx>{`
+
+        .bg-danger-light {
+            background: rgba(217, 83, 78, 0.05);
+        }
+
+        .bg-success-light {
+            background: rgba(92, 184, 92, 0.05);
+        }
+
+        .action {
+          margin-right: 5px;
+          cursor: pointer;
+        }
+        .glyphicon {
+          margin-right: 2px;
+        }
+        .bubble {
+            border-top: 1px solid #e1e1e1;
+            border-bottom: 1px solid #e1e1e1;
+            padding: 20px;
+        }
+      `}</style>
+      <div className="row">
+        <div className={`col-md-6 col-sm-6 col-lg-6 col-md-offset-3 col-sm-offset-3 col-lg-offset-3`}>
+          <div className="panel panel-default">
+            <div className="panel-body">
+              { comment.content }
+            </div>
+            <div className="panel-footer">
+              {/*<small className="action upvote"><i className="glyphicon glyphicon-arrow-up" alt="upvote"/>Upvote</small>
+              <small className="action downvote"><i className="glyphicon glyphicon-arrow-down" alt="downvote"/>Downvote</small> */}
+              <small className="action reply"><a onClick={(e)=> this.handleReply()}><i className="glyphicon glyphicon-share-alt" alt="reply"/>Reply</a></small>
+            </div>
+          </div>
+          { this.state.showBubbleMaker ? <BubbleMaker topic={topic} comment={comment} handleUpdates={()=> {
+              let fn = (resp)=> (this.setState({ showBubbleMaker: false }))
+              console.log("pre call", fn)
+              handleUpdates(fn)
+          }}/> : null}
+        </div>
       </div>
-      <div className="panel-footer">
-        <small className="action upvote"><i className="glyphicon glyphicon-arrow-up" alt="upvote"/>Upvote</small>
-        <small className="action downvote"><i className="glyphicon glyphicon-arrow-down" alt="downvote"/>Downvote</small>
-        <small className="action reply"><i className="glyphicon glyphicon-share-alt" alt="reply"/>Reply</small>
+      <div className="row">
+        <div className="col-md-6 col-sm-6 col-lg-6">
+          { comment.children.filter(a => (a.inFavor )).map((subComment, i) => (
+            <div key={i} className="panel panel-success">
+              <div className="panel-body">
+                { subComment.content }
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="col-md-6 col-sm-6 col-lg-6">
+          { comment.children.filter(a => !a.inFavor).map(subComment => (
+            <div className="panel panel-danger">
+              <div className="panel-body">
+                { subComment.content }
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </div>
-)
+    </div>)
+  }
+}

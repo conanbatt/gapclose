@@ -16,7 +16,7 @@ export default ({ config, db }) => resource({
 	load(req, id, callback) {
 		let topic = Topic.findOne({_id: id}, (err, ltopic) =>{
       callback(err, ltopic)
-    }).populate({"path": 'arguments'});
+    }).populate({"path": 'comments', populate: {path: "children"}});
 	},
 
 	/** GET / - List all entities */
@@ -27,7 +27,7 @@ export default ({ config, db }) => resource({
 	},
 
 	/** POST / - Create a new entity */
-	create({ body }, res) {
+	create({params,  body }, res) {
 
     const topic = new Topic(body);
     topic.update_at = new Date();

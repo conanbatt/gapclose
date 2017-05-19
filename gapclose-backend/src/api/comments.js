@@ -1,12 +1,14 @@
 import resource from 'resource-router-middleware';
 import mongoose from 'mongoose';
 import '../models/comment';
-import '../models/comment';
+import '../models/topic';
 
-const Comment = mongoose.model("comment")
+const Comment = mongoose.model("Comment")
+const Topic = mongoose.model("Topic")
 
 export default ({ config, db }) => resource({
 
+  mergeParams: true,
 	/** Property name to store preloaded entity on `request`. */
 	id : 'comment',
 
@@ -14,6 +16,7 @@ export default ({ config, db }) => resource({
 	 *  Errors terminate the request, success sets `req[id] = data`.
 	 */
 	load(req, id, callback) {
+    console.log("Request has topic?", req, Object.keys(req), req.topic)
 		let comment = Comment.find({_id: id}, (err, lcomment) =>{
       if(!lcomment){
         res.status(404)
@@ -24,19 +27,23 @@ export default ({ config, db }) => resource({
     }).populate({"path": 'arguments'});
 	},
 
-	/** POST / - Create a new entity */
-	create({ body }, res) {
+  /** GET / - List all entities */
+  index({ params }, res) {
+    const topics = Topic.findOne({ _id: params.topicId},(err, topic)=>{
+      res.json({comments: topic.comments});
+    }).populate({ path: "comments", populate: { path: "children"}})
+  },
 
-    const comment = new Comment(body);
-    comment.update_at = new Date();
-    comment.save((err, scomment)=>{
-      if(err){
-        res.status(400)
-        res.json({err: err.toString()})
-      } else {
-        res.json({comment: scomment});
-      }
-    })
+	/** POST / - Create a new entity */
+	async create({params, body }, res) {
+
+    try{
+      let comment = await Comment.create(Object.assign({}, params, body))
+      return res.json({comment: comment });
+    } catch(err){
+      res.status(400)
+      return res.json({err: err.toString()})
+    }
 	},
 
   /** PUT /:id - Update a given entity */

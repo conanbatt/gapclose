@@ -34,7 +34,7 @@ initializeDb( db => {
 
 	app.server.listen(process.env.PORT || config.port);
 
-	console.log(`Started on port ${config.port}`);
+	console.log(`Started on port ${process.env.PORT || config.port}`);
 });
 
 export default app;
