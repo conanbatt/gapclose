@@ -131,7 +131,7 @@ class Bubble extends React.Component {
 
     let { comment, topic, handleUpdates } = this.props;
 
-    return(<div className={`bubble ${comment.inFavor ? 'bg-success-light' : 'bg-danger-light'}`}>
+    return(<div className={`bubble`}>
       <style jsx>{`
 
         .bg-danger-light {
@@ -146,25 +146,35 @@ class Bubble extends React.Component {
           margin-right: 5px;
           cursor: pointer;
         }
+        .support {
+          float: right;
+        }
         .glyphicon {
           margin-right: 2px;
         }
         .bubble {
-            border-top: 1px solid #e1e1e1;
             border-bottom: 1px solid #e1e1e1;
             padding: 20px;
         }
+
+        .bubble:first-child {
+            border-top: 1px solid #e1e1e1;
+        }
       `}</style>
       <div className="row">
-        <div className={`col-md-6 col-sm-6 col-lg-6 col-md-offset-3 col-sm-offset-3 col-lg-offset-3`}>
-          <div className="panel panel-default">
+        <div className={`col-md-8 col-sm-8 col-lg-8 col-md-offset-2 col-sm-offset-2 col-lg-offset-2`}>
+          <div className={`panel ${comment.inFavor ? "panel-success" : "panel-danger"}`}>
+            <div className="panel-heading">
+              { comment.inFavor ? "InFavor" : "Against"}
+            </div>
             <div className="panel-body">
               { comment.content }
             </div>
             <div className="panel-footer">
               {/*<small className="action upvote"><i className="glyphicon glyphicon-arrow-up" alt="upvote"/>Upvote</small>
               <small className="action downvote"><i className="glyphicon glyphicon-arrow-down" alt="downvote"/>Downvote</small> */}
-              <small className="action reply"><a onClick={(e)=> this.handleReply()}><i className="glyphicon glyphicon-share-alt" alt="reply"/>Reply</a></small>
+              <small className="action refute"><a onClick={(e)=> this.handleReply()}><i className="glyphicon glyphicon-share-alt" alt="refute"/>Refute</a></small>
+              <small className="action support"><a onClick={(e)=> this.handleReply()}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
             </div>
           </div>
           { this.state.showBubbleMaker ? <BubbleMaker topic={topic} comment={comment} handleUpdates={()=> {

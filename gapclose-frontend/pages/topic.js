@@ -38,7 +38,7 @@ export default class extends React.Component {
     let updatedTopic = this.state.topic
 
     return(<Layout>
-      <div className="topic">
+      <div className="topic container">
         <Page>
           <div className="">
             <h1 className="page-header text-center">{topic.title}</h1>

@@ -1,15 +1,13 @@
 
 export default ({ children, extraClasses }) => (
-  <div className="page_container container">
+  <div className="page_container panel panel-default">
     <style jsx>{`
       .page_container {
           background: white;
-          border: 1px solid #dedede;
-          border-radius: 4px;
-          padding: 20px 0;
-          margin-bottom: 40px;
       }
     `}
     </style>
-    { children }
+    <div className="panel-body">
+      { children }
+    </div>
   </div>)
