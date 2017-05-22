@@ -10,7 +10,7 @@ import 'isomorphic-fetch';
 export default class extends React.Component {
 
   static async getInitialProps ({ req }) {
-    const res = await fetch("http://localhost:3003/api/topics")
+    const res = await fetch("/api/topics")
     const json = await res.json()
     return json
   }
@@ -64,7 +64,7 @@ class CreateTopic extends React.Component {
 
   onSubmit(event){
     event.preventDefault();
-    fetch('http://localhost:3003/api/topics', {
+    fetch('/api/topics', {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'

@@ -8,7 +8,7 @@ import 'isomorphic-fetch';
 export default class extends React.Component {
 
   static async getInitialProps ({ req, query }) {
-    const res = await fetch(`http://localhost:3003/api/topics/${query.id}`)
+    const res = await fetch(`/api/topics/${query.id}`)
     const json = await res.json()
     return json
   }
@@ -19,7 +19,7 @@ export default class extends React.Component {
   }
 
   handleUpdates(callback){
-    fetch(`http://localhost:3003/api/topics/${this.props.topic._id}`)
+    fetch(`/api/topics/${this.props.topic._id}`)
     .then(res => res.json())
     .then(resp =>{
       this.setState({topic: resp.topic})

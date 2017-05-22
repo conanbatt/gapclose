@@ -60,7 +60,7 @@ class BubbleMaker extends React.Component {
 
   onSubmit(e){
     e.preventDefault()
-    fetch(`http://localhost:3003/api/topics/${this.props.topic._id}/comments`, {
+    fetch(`/api/topics/${this.props.topic._id}/comments`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
