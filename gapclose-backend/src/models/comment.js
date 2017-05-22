@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+require("babel-polyfill"); //Hack for transpiler
 
 const Schema = mongoose.Schema
 const Topic = mongoose.model("Topic")
@@ -12,7 +13,7 @@ const CommentSchema = new Schema({
   inFavor:        { type: Boolean, required: true }
 })
 
-CommentSchema.statics.create = async ({topicId, parentId, ...rest},)=>{
+CommentSchema.statics.create = async ({topicId, parentId, ...rest})=>{
 
   const topic = await Topic.findOne({ _id: topicId})
   let parentComment;
