@@ -1,4 +1,4 @@
-FROM node:4-onbuild
+FROM node
 # replace this with your application's default port
 
 RUN mkdir -p /usr/src/app
