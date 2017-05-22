@@ -8,9 +8,14 @@ import 'isomorphic-fetch';
 export default class extends React.Component {
 
   static async getInitialProps ({ req, query }) {
-    const res = await fetch(`/api/topics/${query.id}`)
+
+    const baseUrl = req ? `${req.protocol}://${req.get('Host')}` : '';
+    const auth = await fetch(`${baseUrl}/api/auth/test`, {credentials: 'same-origin'})
+    const authRes = { loggedIn: auth.status !== 401 }
+
+    const res = await fetch(`${baseUrl}/api/topics/${query.id}`)
     const json = await res.json()
-    return json
+    return Object.assign({}, json, authRes)
   }
 
   constructor(props){
@@ -23,7 +28,6 @@ export default class extends React.Component {
     .then(res => res.json())
     .then(resp =>{
       this.setState({topic: resp.topic})
-      console.log("what is", callback)
       if(typeof callback == "function"){
         callback(resp)
 
@@ -32,12 +36,10 @@ export default class extends React.Component {
   }
 
   render(){
-    console.log("req", this.props)
-
     let { topic } = this.props;
     let updatedTopic = this.state.topic
 
-    return(<Layout>
+    return(<Layout loggedIn={this.props.loggedIn}>
       <div className="topic container">
         <Page>
           <div className="">

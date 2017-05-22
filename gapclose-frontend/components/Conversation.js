@@ -40,7 +40,7 @@ class BubbleMaker extends React.Component {
 
   constructor(props){
     super(props);
-    let base = { inFavor: true }
+    let base = { inFavor: this.props.inFavor }
     if(props.comment){
       base.parentId = props.comment._id
     }
@@ -56,6 +56,10 @@ class BubbleMaker extends React.Component {
     const name = target.name;
     const value = target.value;
     this.setState({[name]: value})
+  }
+
+  componentWillReceiveProps(props, state){
+    this.setState({inFavor: props.inFavor})
   }
 
   onSubmit(e){
@@ -123,8 +127,12 @@ class Bubble extends React.Component {
     this.state = { showBubbleMaker: false };
   }
 
-  handleReply(){
-    this.setState({ showBubbleMaker: !this.state.showBubbleMaker})
+  handleReply(inFavor){
+    if(inFavor != this.state.inFavor){
+      this.setState({ inFavor: inFavor})
+    } else {
+      this.setState({ showBubbleMaker: !this.state.showBubbleMaker, inFavor: inFavor})
+    }
   }
 
   render(){
@@ -146,9 +154,6 @@ class Bubble extends React.Component {
           margin-right: 5px;
           cursor: pointer;
         }
-        .support {
-          float: right;
-        }
         .glyphicon {
           margin-right: 2px;
         }
@@ -158,7 +163,6 @@ class Bubble extends React.Component {
         }
 
         .bubble:first-child {
-            border-top: 1px solid #e1e1e1;
         }
       `}</style>
       <div className="row">
@@ -173,15 +177,24 @@ class Bubble extends React.Component {
             <div className="panel-footer">
               {/*<small className="action upvote"><i className="glyphicon glyphicon-arrow-up" alt="upvote"/>Upvote</small>
               <small className="action downvote"><i className="glyphicon glyphicon-arrow-down" alt="downvote"/>Downvote</small> */}
-              <small className="action refute"><a onClick={(e)=> this.handleReply()}><i className="glyphicon glyphicon-share-alt" alt="refute"/>Refute</a></small>
-              <small className="action support"><a onClick={(e)=> this.handleReply()}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
+              <div className="row">
+                <div className="col-md-6 col-lg-6 col-sm-6">
+                  <small className="action refute"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="refute"/>Refute</a></small>
+                </div>
+                <div className="col-md-6 col-lg-6 col-sm-6 text-right">
+                  <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
+                </div>
+              </div>
             </div>
           </div>
-          { this.state.showBubbleMaker ? <BubbleMaker topic={topic} comment={comment} handleUpdates={()=> {
+          { this.state.showBubbleMaker ? <BubbleMaker topic={topic}
+            comment={comment} inFavor={this.state.inFavor}
+            handleUpdates={()=> {
               let fn = (resp)=> (this.setState({ showBubbleMaker: false }))
               console.log("pre call", fn)
               handleUpdates(fn)
-          }}/> : null}
+            }
+          }/> : null}
         </div>
       </div>
       <div className="row">
@@ -195,8 +208,8 @@ class Bubble extends React.Component {
           ))}
         </div>
         <div className="col-md-6 col-sm-6 col-lg-6">
-          { comment.children.filter(a => !a.inFavor).map(subComment => (
-            <div className="panel panel-danger">
+          { comment.children.filter(a => !a.inFavor).map((subComment, i) => (
+            <div key={i} className="panel panel-danger">
               <div className="panel-body">
                 { subComment.content }
               </div>

@@ -39,7 +39,13 @@ app.use(passport.initialize({ session: false }))
 
 const jwtOptions = {
   secretOrKey: process.env.JWT_SECRET,
-  jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+  jwtFromRequest: (req)=>{
+    if(req && req.session.jwt_token){
+      return req.session.jwt_token;
+    } else {
+      return ExtractJwt.fromHeader('authorization')
+    }
+  }
 }
 
 passport.serializeUser(function(user, done) {

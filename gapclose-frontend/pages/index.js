@@ -10,13 +10,18 @@ import 'isomorphic-fetch';
 export default class extends React.Component {
 
   static async getInitialProps ({ req }) {
-    const res = await fetch("/api/topics")
+
+    const baseUrl = req ? `${req.protocol}://${req.get('Host')}` : '';
+    const auth = await fetch(`${baseUrl}/api/auth/test`, {credentials: 'same-origin'})
+    const authRes = { loggedIn: auth.status !== 401 }
+
+    const res = await fetch(`${baseUrl}/api/topics`)
     const json = await res.json()
-    return json
+    return Object.assign({}, authRes, json)
   }
 
   render(){
-    return <Layout>
+    return <Layout loggedIn={this.props.loggedIn}>
       <div className="index container">
         <style jsx>{`
           .list-group-item-hover {
@@ -37,8 +42,9 @@ export default class extends React.Component {
           <p>GapClose is a platform to have fruitful online discussion, where the pros and cons of every argument can be organized, answered and re-utilized in different topics.</p>
         </div>
         <Page>
-
           <CreateTopic/>
+        </Page>
+        <Page>
           <h2> Current Topics </h2>
           <ul className="list-group">
           { this.props.topics.map((topic,i)=>{
@@ -59,17 +65,24 @@ class CreateTopic extends React.Component {
   }
 
   onChange(event){
+    console.log("change", event)
+    if(this.state.title.length > 10 && this.state.title.length < 150){
+      this.setState({ invalidTitleLength: false})
+    }
     this.setState({title: event.target.value})
   }
 
   onSubmit(event){
     event.preventDefault();
+    if(this.state.title.length < 10 || this.state.title.length > 150){
+      return this.setState({ invalidTitleLength: true})
+    }
     fetch('/api/topics', {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(this.state)
+      body: JSON.stringify({title: this.state.title})
     }).then((response)=>{
       return response.json()
     }).then((json)=>{
@@ -80,6 +93,7 @@ class CreateTopic extends React.Component {
 
   render(){
     return(<div>
+      <p>Create a new Topic </p>
       <form onSubmit={(e) => this.onSubmit(e)}>
         <div className="form-group">
           <textarea type="text" className="form-control"
@@ -87,12 +101,20 @@ class CreateTopic extends React.Component {
             value={this.state.title}
             onChange={ (e) => this.onChange(e) }
             required={true}
-            minlength="10"
-            maxlength="150"
+            title="10 to 150 characters"
+            minLength="10"
+            maxLength="150"
           />
         </div>
-        <input className="btn-primary btn" type="submit" value="Send"/>
+        <div className="form-group">
+          <input className="btn-primary btn" type="submit" value="Send"/>
+        </div>
       </form>
+       { this.state.invalidTitleLength ?
+          <ul className="list-group">
+            <li className="list-group-item list-group-item-danger">Title must be between 10 and 150 characters</li>
+          </ul> : null
+        }
     </div>)
   }
 }

@@ -1,5 +1,5 @@
 
-export default ({ children, extraClasses }) => (
+export default ({ children, extraClasses, title }) => (
   <div className="page_container panel panel-default">
     <style jsx>{`
       .page_container {
@@ -7,6 +7,10 @@ export default ({ children, extraClasses }) => (
       }
     `}
     </style>
+    { title ?
+      <div className="panel-heading">
+        { title }
+      </div> : null }
     <div className="panel-body">
       { children }
     </div>
