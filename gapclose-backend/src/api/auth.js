@@ -20,6 +20,7 @@ auth.post('/login', (req, res) => {
       if(result) {
         console.log("TOKEN", process.env.JWT_SECRET)
         const token = jwt.sign({id: req.body.username},  process.env.JWT_SECRET)
+        req.session.jwt_token = token;
         return res.status(200).json({ message: 'ok', token })
       }
       else {

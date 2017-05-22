@@ -12,6 +12,7 @@ import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import passport from 'passport';
 import User from './models/user';
 import dotenv from 'dotenv'
+import cookieSession from 'cookie-session';
 dotenv.config();
 
 let app = express();
@@ -28,6 +29,11 @@ app.use(cors({
 app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
+
+app.use(cookieSession({
+  name: 'session',
+  keys: [process.env.JWT_SECRET]
+}))
 
 app.use(passport.initialize({ session: false }))
 
