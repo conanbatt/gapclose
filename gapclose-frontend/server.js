@@ -8,7 +8,7 @@ const handle = app.getRequestHandler()
 
 var proxy = require('express-http-proxy');
 
-var apiProxy = proxy('http://localhost:3003/', {
+var apiProxy = proxy(process.env.API_HOST, {
   proxyReqPathResolver: function (req, res) {
       return require('url').parse(req.baseUrl).path;
   }
