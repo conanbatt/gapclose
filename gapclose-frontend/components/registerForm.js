@@ -1,5 +1,6 @@
-import Link from 'next/link'
-import Head from 'next/head'
+import Link from 'next/link';
+import Head from 'next/head';
+import Router from 'next/router';
 import React from 'react';
 import { Modal } from 'react-bootstrap';
 import 'isomorphic-fetch';
@@ -20,16 +21,18 @@ export default class RegisterForm extends React.Component {
 
     event.preventDefault();
 
-    fetch('/api/user/create', {
+    fetch('/api/users', {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(this.state)
     }).then((response)=>{
+      if(response.status == 200){
+        Router.push("/login")
+      }
       return response.json()
     }).then((json)=>{
-      console.log("validation response", json)
       if(json.message == "ok"){
         if(typeof this.props.onLogin === 'function'){
           this.props.onLogin(json)
@@ -55,7 +58,7 @@ export default class RegisterForm extends React.Component {
           <input type="password" name="password" className="form-control" onChange={(e)=>{ this.onChange(e)}}/>
         </div>
         <div className="form-group">
-          <input type="submit" className="btn btn-primary" value="Log in"/>
+          <input type="submit" className="btn btn-primary" value="Create"/>
         </div>
         <ul className="list-group">
           { this.state.response && this.state.response.message !== "ok" ?

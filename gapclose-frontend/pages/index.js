@@ -2,9 +2,10 @@ import Head from 'next/head';
 import Conversation from '../components/conversation.js';
 import Layout from '../components/layout.js';
 import Page from '../components/page.js';
+import { authorized } from '../utils/auth';
 import React from 'react';
 import Link from 'next/link';
-import Router from 'next/router'
+import Router from 'next/router';
 import 'isomorphic-fetch';
 
 export default class extends React.Component {
@@ -12,12 +13,10 @@ export default class extends React.Component {
   static async getInitialProps ({ req }) {
 
     const baseUrl = req ? `${req.protocol}://${req.get('Host')}` : '';
-    const auth = await fetch(`${baseUrl}/api/auth/test`, {credentials: 'same-origin'})
-    const authRes = { loggedIn: auth.status !== 401 }
-
     const res = await fetch(`${baseUrl}/api/topics`)
     const json = await res.json()
-    return Object.assign({}, authRes, json)
+
+    return Object.assign({}, {loggedIn: authorized(req)}, json)
   }
 
   render(){
@@ -65,7 +64,6 @@ class CreateTopic extends React.Component {
   }
 
   onChange(event){
-    console.log("change", event)
     if(this.state.title.length > 10 && this.state.title.length < 150){
       this.setState({ invalidTitleLength: false})
     }

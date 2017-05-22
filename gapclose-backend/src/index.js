@@ -43,7 +43,7 @@ const jwtOptions = {
     if(req && req.session.jwt_token){
       return req.session.jwt_token;
     } else {
-      return ExtractJwt.fromHeader('authorization')
+      return ExtractJwt.fromHeader('authorization')(req)
     }
   }
 }

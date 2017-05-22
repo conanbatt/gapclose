@@ -16,7 +16,6 @@ export default ({ config, db }) => resource({
 	 *  Errors terminate the request, success sets `req[id] = data`.
 	 */
 	load(req, id, callback) {
-    console.log("Request has topic?", req, Object.keys(req), req.topic)
 		let comment = Comment.find({_id: id}, (err, lcomment) =>{
       if(!lcomment){
         res.status(404)

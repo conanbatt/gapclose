@@ -29,7 +29,6 @@ export default class LoginForm extends React.Component {
     }).then((response)=>{
       return response.json()
     }).then((json)=>{
-      console.log("validation response", json)
       if(json.message == "ok"){
         if(typeof this.props.onLogin === 'function'){
           this.props.onLogin(json)

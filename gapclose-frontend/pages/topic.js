@@ -2,6 +2,7 @@ import Head from 'next/head';
 import Conversation from '../components/conversation.js';
 import Layout from '../components/layout.js';
 import Page from '../components/page.js';
+import { authorize } from '../utils/auth';
 import React from 'react';
 import 'isomorphic-fetch';
 
@@ -10,12 +11,9 @@ export default class extends React.Component {
   static async getInitialProps ({ req, query }) {
 
     const baseUrl = req ? `${req.protocol}://${req.get('Host')}` : '';
-    const auth = await fetch(`${baseUrl}/api/auth/test`, {credentials: 'same-origin'})
-    const authRes = { loggedIn: auth.status !== 401 }
-
     const res = await fetch(`${baseUrl}/api/topics/${query.id}`)
     const json = await res.json()
-    return Object.assign({}, json, authRes)
+    return Object.assign({}, {loggedIn: authorized(req)}, json)
   }
 
   constructor(props){
