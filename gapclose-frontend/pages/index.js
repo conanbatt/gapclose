@@ -16,12 +16,11 @@ export default class extends React.Component {
     const res = await fetch(`${baseUrl}/api/topics`)
     const json = await res.json()
 
-    const auth = await authorized(req)
-    return Object.assign({}, {loggedIn: auth}, json)
+    return Object.assign({}, {user: await authorized(req)}, json)
   }
 
   render(){
-    return <Layout loggedIn={this.props.loggedIn}>
+    return <Layout user={this.props.user}>
       <div className="index container">
         <style jsx>{`
           .list-group-item-hover {
