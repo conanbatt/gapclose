@@ -7,7 +7,6 @@ export const authorized = async (req)=>{
   }
   const auth = await fetch(`${baseUrl}/api/auth/user`, {credentials: 'same-origin', headers: authHeader})
   const resp = await auth.json()
-  console.log("auth resp", resp)
   if(resp.auth){
     return resp.user
   }
