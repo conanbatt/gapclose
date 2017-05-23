@@ -12,7 +12,7 @@ auth.get('/test', passport.authenticate('jwt') , (req, res) => {
 auth.get('/logout', (req, res) =>{
   req.session = null;
   res.status(200)
-  return res.json({loggedOut: true})
+  res.json({loggedOut: true})
 })
 
 auth.post('/login', (req, res) => {

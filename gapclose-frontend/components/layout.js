@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Head from 'next/head';
+import Router from 'next/router';
 import React from 'react';
 
 export default class Layout extends React.Component {
@@ -14,6 +15,15 @@ export default class Layout extends React.Component {
       console.log("called")
       this.setState({ showLoginModal: toggle })
     }
+  }
+
+  logOut(e){
+    e.preventDefault()
+    fetch("/api/auth/logout", {credentials: 'same-origin'}).then(resp => resp.json()).then(json =>{
+      if(json.loggedOut){
+        Router.push("/")
+      }
+    })
   }
 
   render(){
@@ -53,7 +63,7 @@ export default class Layout extends React.Component {
            <ul className="nav navbar-nav navbar-right">
             <li>
               { loggedIn ?
-                <a href="/api/auth/logout">Log Out </a> :
+                <a href="/api/auth/logout" onClick={(e)=> this.logOut(e)}>Log Out </a> :
                 <Link prefetch href="/login"><a href="#">Log In </a></Link>
               }
             </li>

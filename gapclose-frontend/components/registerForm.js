@@ -4,6 +4,7 @@ import Router from 'next/router';
 import React from 'react';
 import { Modal } from 'react-bootstrap';
 import 'isomorphic-fetch';
+import { logIn } from '../utils/auth';
 
 export default class RegisterForm extends React.Component {
 
@@ -29,15 +30,15 @@ export default class RegisterForm extends React.Component {
       body: JSON.stringify(this.state)
     }).then((response)=>{
       if(response.status == 200){
-        Router.push("/login")
+        logIn(this.state.username, this.state.password).then(resp =>{
+          Router.push("/")
+        })
       }
       return response.json()
+      this.setState({ success: response.status == 200 })
+
+      fetch("/api/auth/login", {})
     }).then((json)=>{
-      if(json.message == "ok"){
-        if(typeof this.props.onLogin === 'function'){
-          this.props.onLogin(json)
-        }
-      }
       this.setState({response: json})
     })
   }
@@ -61,7 +62,7 @@ export default class RegisterForm extends React.Component {
           <input type="submit" className="btn btn-primary" value="Create"/>
         </div>
         <ul className="list-group">
-          { this.state.response && this.state.response.message !== "ok" ?
+          { this.state.response && !this.state.success ?
             <li className="list-group-item list-group-item-danger"> { this.state.response.message }</li> : null
           }
         </ul>

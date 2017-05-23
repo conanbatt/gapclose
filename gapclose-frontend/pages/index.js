@@ -16,7 +16,8 @@ export default class extends React.Component {
     const res = await fetch(`${baseUrl}/api/topics`)
     const json = await res.json()
 
-    return Object.assign({}, {loggedIn: authorized(req)}, json)
+    const auth = await authorized(req)
+    return Object.assign({}, {loggedIn: auth}, json)
   }
 
   render(){
