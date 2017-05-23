@@ -7,6 +7,7 @@ const Topic = mongoose.model("Topic")
 const CommentSchema = new Schema({
 	content:        { type: String, required: true, minlength: 2, maxlength: 1000 },
 	updated_at:     { type: Date, default: Date.now },
+  user:           { type: Schema.Types.ObjectId, ref: "User", required: true },
   topic:          { type: Schema.Types.ObjectId, ref: "Topic", required: true },
   children:       [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   parent:         { type: Schema.Types.ObjectId, ref: "Comment"},

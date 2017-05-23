@@ -3,6 +3,7 @@ import Head from 'next/head'
 import React from 'react';
 import { Modal } from 'react-bootstrap';
 import 'isomorphic-fetch';
+import { logIn } from '../utils/auth';
 
 export default class LoginForm extends React.Component {
 
@@ -19,16 +20,7 @@ export default class LoginForm extends React.Component {
 
     event.preventDefault();
 
-    fetch('/api/auth/login', {
-      method: "POST",
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(this.state)
-    }).then((response)=>{
-      return response.json()
-    }).then((json)=>{
+    logIn(this.state.username ,this.state.password).then(json =>{
       if(json.message == "ok"){
         if(typeof this.props.onLogin === 'function'){
           this.props.onLogin(json)

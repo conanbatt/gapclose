@@ -38,7 +38,7 @@ export default class extends React.Component {
         `}
         </style>
         <div className="jumbotron bg-primary">
-          <h1>Debate, Discuss, Disentangle</h1>
+          <h1>Debate and Discuss</h1>
           <p>GapClose is a platform to have fruitful online discussion, where the pros and cons of every argument can be organized, answered and re-utilized in different topics.</p>
         </div>
         <Page>

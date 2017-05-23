@@ -5,8 +5,8 @@ import passport from 'passport'
 
 const auth = Router()
 
-auth.get('/test', passport.authenticate('jwt') , (req, res) => {
-  res.status(200).json({ message: 'Authenticated', auth: req.isAuthenticated() })
+auth.get('/user', passport.authenticate('jwt') , (req, res) => {
+  res.status(200).json({ message: 'Authenticated', auth: req.isAuthenticated(), user: req.user})
 })
 
 auth.get('/logout', (req, res) =>{

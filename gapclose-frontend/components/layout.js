@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import Router from 'next/router';
 import React from 'react';
+import { NavDropdown, MenuItem } from 'react-bootstrap';
 
 export default class Layout extends React.Component {
 
@@ -28,7 +29,7 @@ export default class Layout extends React.Component {
 
   render(){
 
-    let { loggedIn, children } = this.props;
+    let { user, children } = this.props;
 
     return(<div className="layout">
       <Head>
@@ -61,12 +62,11 @@ export default class Layout extends React.Component {
             <Link prefetch href="/"><li><a href="#">Topics</a></li></Link>
           </ul>
            <ul className="nav navbar-nav navbar-right">
-            <li>
-              { loggedIn ?
-                <a href="/api/auth/logout" onClick={(e)=> this.logOut(e)}>Log Out </a> :
-                <Link prefetch href="/login"><a href="#">Log In </a></Link>
-              }
-            </li>
+            { user ? <NavDropdown title={user.username} id="nav-drop">
+              <MenuItem key={1} href="/api/auth/logout" onClick={(e)=> this.logOut(e)}>Log Out </MenuItem>
+            </NavDropdown> :
+            <li><Link prefetch href="/login"><a href="#">Log In </a></Link></li>
+            }
           </ul>
         </div>
       </nav>

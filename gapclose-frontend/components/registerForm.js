@@ -34,10 +34,9 @@ export default class RegisterForm extends React.Component {
           Router.push("/")
         })
       }
-      return response.json()
       this.setState({ success: response.status == 200 })
+      return response.json()
 
-      fetch("/api/auth/login", {})
     }).then((json)=>{
       this.setState({response: json})
     })

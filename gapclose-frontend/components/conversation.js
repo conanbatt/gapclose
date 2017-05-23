@@ -2,7 +2,7 @@ import React from 'react';
 import Toggle from 'react-bootstrap-toggle';
 import 'isomorphic-fetch';
 
-export default ({topic, handleUpdates}) => (
+export default ({topic, handleUpdates, user}) => (
   <div className="conversation">
   	<style jsx>{`
       .page-header {
@@ -24,11 +24,11 @@ export default ({topic, handleUpdates}) => (
         </div>
       </div>*/}
       { topic.comments.filter(comm => !comm.parent).map((comment, i) => (
-        <Bubble topic={topic} comment={comment} handleUpdates={handleUpdates} key={i}/>
+        <Bubble topic={topic} comment={comment} handleUpdates={handleUpdates} key={i} user={user}/>
       ))}
       <div className="new">
         <h3> What do you think? </h3>
-        <BubbleMaker topic={topic} handleUpdates={handleUpdates}/>
+        <BubbleMaker topic={topic} handleUpdates={handleUpdates} inFavor={true}/>
       </div>
     </div>
   </div>
@@ -66,6 +66,7 @@ class BubbleMaker extends React.Component {
     e.preventDefault()
     fetch(`/api/topics/${this.props.topic._id}/comments`, {
       method: "POST",
+      credentials: "same-origin",
       headers: {
         'Content-Type': 'application/json',
         'Accept':  'application/json'
@@ -97,7 +98,7 @@ class BubbleMaker extends React.Component {
         <div className="panel panel-default add_bubble text-center">
           <div className="panel-body">
             <div className="form-group">
-              <textarea name="content" placeholder="I think that..." className="content form-control" onChange={(e)=>{this.onChange(e)}}/>
+              <textarea required={true} name="content" placeholder="I think that..." className="content form-control" onChange={(e)=>{this.onChange(e)}}/>
             </div>
             <div className="text-right">
               <Toggle
@@ -128,16 +129,24 @@ class Bubble extends React.Component {
   }
 
   handleReply(inFavor){
+
     if(inFavor != this.state.inFavor){
-      this.setState({ inFavor: inFavor})
+      this.setState({ inFavor: inFavor, showBubbleMaker: true })
     } else {
       this.setState({ showBubbleMaker: !this.state.showBubbleMaker, inFavor: inFavor})
     }
   }
 
+  deleteComment(){
+    fetch(`/api/topics/${this.props.topic._id}/comments/${this.props.comment._id}`, {
+      credentials: 'same-origin',
+      method: "DELETE"
+    }).then(resp => resp.json()).then(json => this.props.handleUpdates())
+  }
+
   render(){
 
-    let { comment, topic, handleUpdates } = this.props;
+    let { comment, topic, handleUpdates,user } = this.props;
 
     return(<div className={`bubble`}>
       <style jsx>{`
@@ -177,14 +186,9 @@ class Bubble extends React.Component {
             <div className="panel-footer">
               {/*<small className="action upvote"><i className="glyphicon glyphicon-arrow-up" alt="upvote"/>Upvote</small>
               <small className="action downvote"><i className="glyphicon glyphicon-arrow-down" alt="downvote"/>Downvote</small> */}
-              <div className="row">
-                <div className="col-md-6 col-lg-6 col-sm-6">
-                  <small className="action refute"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="refute"/>Refute</a></small>
-                </div>
-                <div className="col-md-6 col-lg-6 col-sm-6 text-right">
-                  <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
-                </div>
-              </div>
+              <small className="action refute"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="refute"/>Refute</a></small>
+              <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
+              { !comment.children.length  && (comment.user._id == (user && user._id)) ? <small className="action delete"><a onClick={(e)=> this.deleteComment()}><i className="glyphicon glyphicon-remove" alt="delete"/>Delete</a></small> : null }
             </div>
           </div>
           { this.state.showBubbleMaker ? <BubbleMaker topic={topic}
