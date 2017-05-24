@@ -198,6 +198,7 @@ class Bubble extends React.Component {
             </div>
           </div>
           { this.state.showBubbleMaker ? <BubbleMaker topic={topic}
+            user={user}
             comment={comment} inFavor={this.state.inFavor}
             handleUpdates={()=> {
               let fn = (resp)=> (this.setState({ showBubbleMaker: false }))
