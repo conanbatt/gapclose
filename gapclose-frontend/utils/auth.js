@@ -6,6 +6,9 @@ export const authorized = async (req)=>{
     authHeader.append('cookie', req.headers.cookie)
   }
   const auth = await fetch(`${baseUrl}/api/auth/user`, {credentials: 'same-origin', headers: authHeader})
+  if(auth.status == 401){
+    return
+  }
   const resp = await auth.json()
   if(resp.auth){
     return resp.user

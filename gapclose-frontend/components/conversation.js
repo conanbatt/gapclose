@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Toggle from 'react-bootstrap-toggle';
 import 'isomorphic-fetch';
 
@@ -28,7 +29,7 @@ export default ({topic, handleUpdates, user}) => (
       ))}
       <div className="new">
         <h3> What do you think? </h3>
-        <BubbleMaker topic={topic} handleUpdates={handleUpdates} inFavor={true}/>
+        <BubbleMaker topic={topic} handleUpdates={handleUpdates} inFavor={true} user={user}/>
       </div>
     </div>
   </div>
@@ -82,6 +83,7 @@ class BubbleMaker extends React.Component {
 
   render(){
     return(<div className="bubble_placeholder">
+
       <style jsx>{`
         .add_bubble:hover {
             cursor: pointer;
@@ -94,7 +96,8 @@ class BubbleMaker extends React.Component {
             height: 80px;
         }
       `}</style>
-      <form onSubmit={(e)=>this.onSubmit(e)}>
+
+      { this.props.user ? <form onSubmit={(e)=>this.onSubmit(e)}>
         <div className="panel panel-default add_bubble text-center">
           <div className="panel-body">
             <div className="form-group">
@@ -115,7 +118,9 @@ class BubbleMaker extends React.Component {
             <input type="submit" className="btn-primary btn" value="Send" />
           </div>
         </div>
-      </form>
+      </form> : <div className="panel panel-default"><div className="panel-body">
+        <Link prefetch href="/login"><a>Log In or Create an account</a></Link> to make comments
+      </div></div>}
     </div>)
   }
 
