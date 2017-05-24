@@ -16,7 +16,10 @@ export default ({ config, db }) => resource({
 	load(req, id, callback) {
 		let topic = Topic.findOne({_id: id}, (err, ltopic) =>{
       callback(err, ltopic)
-    }).populate({"path": 'comments', populate: [{path: "children"}, {path: "user"}]});
+    }).populate({"path": 'comments', populate: [
+      {path: "children", populate: { path: "user" }},
+      {path: "user"}
+    ]});
 	},
 
 	/** GET / - List all entities */
