@@ -17,12 +17,7 @@ export default ({ config, db }) => resource({
 	 */
 	load(req, id, callback) {
 		let comment = Comment.findOne({_id: id}, (err, lcomment) =>{
-      if(!lcomment){
-        res.status(404)
-        res.json({message: "Not found"})
-      } else {
-        callback(err, lcomment)
-      }
+      callback(err, lcomment)
     }).populate({"path": 'arguments'});
 	},
 
