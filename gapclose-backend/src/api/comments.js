@@ -48,7 +48,6 @@ export default ({ config, db }) => resource({
   /** DELETE /:id - Delete a given entity */
   async delete({user, comment }, res) {
 
-    console.log("ama i here", )
     if((user && user._id).toString() !== comment.user.toString()){
       res.status(401)
       return res.json({err: "You are not the owner of this comment"})
@@ -71,7 +70,7 @@ export default ({ config, db }) => resource({
   /** PUT /:id - Update a given entity */
   update({ comment, body }, res) {
     for (let key in body) {
-      if (key!=='id') {
+      if (key !=='id') {
         comment[key] = body[key];
       }
       comment.update_at = new Date();

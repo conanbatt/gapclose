@@ -11,7 +11,8 @@ const CommentSchema = new Schema({
   topic:          { type: Schema.Types.ObjectId, ref: "Topic", required: true },
   children:       [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   parent:         { type: Schema.Types.ObjectId, ref: "Comment"},
-  inFavor:        { type: Boolean, required: true }
+  inFavor:        { type: Boolean, required: true },
+  upvotes:        [{ type: Schema.Types.ObjectId, ref:  "User" }],
 })
 
 CommentSchema.statics.create = async ({topicId, parentId, ...rest})=>{

@@ -142,11 +142,26 @@ class Bubble extends React.Component {
     }
   }
 
-  deleteComment(){
-    fetch(`/api/topics/${this.props.topic._id}/comments/${this.props.comment._id}`, {
+  deleteComment(comment){
+    fetch(`/api/topics/${this.props.topic._id}/comments/${comment._id}`, {
       credentials: 'same-origin',
       method: "DELETE"
     }).then(resp => resp.json()).then(json => this.props.handleUpdates())
+  }
+
+  deleteCommentButton(comment){
+    console.log("dfq is user", comment.user._id,this.props.user._id, comment.children)
+    if(comment.user._id == this.props.user._id && !comment.children.length){
+      return(<small className="action delete">
+        <a onClick={(e)=> {
+          let res = confirm("Are you sure you want to delete this comment?");
+          if(res){ this.deleteComment(comment)}
+        }}>
+          <i className="glyphicon glyphicon-remove" alt="delete"/>
+          Delete
+        </a>
+      </small>)
+    }
   }
 
   render(){
@@ -192,9 +207,9 @@ class Bubble extends React.Component {
             <div className="panel-footer">
               {/*<small className="action upvote"><i className="glyphicon glyphicon-arrow-up" alt="upvote"/>Upvote</small>
               <small className="action downvote"><i className="glyphicon glyphicon-arrow-down" alt="downvote"/>Downvote</small> */}
-              <small className="action refute"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="refute"/>Refute</a></small>
+              <small className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>
               <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
-              { !comment.children.length  && (comment.user._id == (user && user._id)) ? <small className="action delete"><a onClick={(e)=> this.deleteComment()}><i className="glyphicon glyphicon-remove" alt="delete"/>Delete</a></small> : null }
+              { this.deleteCommentButton(comment) }
             </div>
           </div>
           { this.state.showBubbleMaker ? <BubbleMaker topic={topic}
@@ -215,6 +230,9 @@ class Bubble extends React.Component {
               <div className="panel-body">
                 <div><strong>{ subComment.user.username }: </strong></div>
                 <span>{ subComment.content }</span>
+              </div>
+              <div className="panel-footer">
+                { this.deleteCommentButton(subComment)}
               </div>
             </div>
           ))}

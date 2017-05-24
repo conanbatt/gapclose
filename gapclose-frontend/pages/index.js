@@ -47,7 +47,11 @@ export default class extends React.Component {
           <h2> Current Topics </h2>
           <ul className="list-group">
           { this.props.topics.map((topic,i)=>{
-            return(<Link key={i} prefetch href={`/topic?id=${topic._id}`}><li className="list-group-item list-group-item-hover"><h4><a>{ topic.title }</a></h4></li></Link>)
+            return(<Link key={i} prefetch href={`/topic?id=${topic._id}`}>
+              <li className="list-group-item list-group-item-hover"><h4><a>{ topic.title }</a>
+              <small> { topic.comments.length || "No"} comments</small>
+            </h4>
+            </li></Link>)
           })}
           </ul>
         </Page>
