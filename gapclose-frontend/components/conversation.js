@@ -186,7 +186,8 @@ class Bubble extends React.Component {
               { comment.inFavor ? "InFavor" : "Against"}
             </div>
             <div className="panel-body">
-              { comment.content }
+              <div><strong>{ comment.user.username }: </strong></div>
+              <span>{ comment.content }</span>
             </div>
             <div className="panel-footer">
               {/*<small className="action upvote"><i className="glyphicon glyphicon-arrow-up" alt="upvote"/>Upvote</small>
@@ -211,7 +212,8 @@ class Bubble extends React.Component {
           { comment.children.filter(a => (a.inFavor )).map((subComment, i) => (
             <div key={i} className="panel panel-success">
               <div className="panel-body">
-                { subComment.content }
+                <div><strong>{ subComment.user.username }: </strong></div>
+                <span>{ subComment.content }</span>
               </div>
             </div>
           ))}
@@ -220,7 +222,8 @@ class Bubble extends React.Component {
           { comment.children.filter(a => !a.inFavor).map((subComment, i) => (
             <div key={i} className="panel panel-danger">
               <div className="panel-body">
-                { subComment.content }
+                <div><strong>{ subComment.user.username }: </strong></div>
+                <span>{ subComment.content }</span>
               </div>
             </div>
           ))}
