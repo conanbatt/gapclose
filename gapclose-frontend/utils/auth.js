@@ -2,7 +2,7 @@ export const authorized = async (req)=>{
 
   const baseUrl = req ? `${req.protocol}://${req.get('Host')}` : '';
   const authHeader = new Headers();
-  if(req){
+  if(req && req.headers.cookie){
     authHeader.append('cookie', req.headers.cookie)
   }
   const auth = await fetch(`${baseUrl}/api/auth/user`, {credentials: 'same-origin', headers: authHeader})
