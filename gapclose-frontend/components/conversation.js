@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Toggle from 'react-bootstrap-toggle';
-import showdown from 'showdown';
 import 'isomorphic-fetch';
 import ReactMarkdown from 'react-markdown';
 
