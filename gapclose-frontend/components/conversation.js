@@ -9,23 +9,12 @@ export default ({topic, handleUpdates, user}) => (
       .page-header {
           margin-top: 20px;
       }
-      .new {
-        padding: 0 20px;
-      }
   	`}
   	</style>
+    { topic.introduction ? <div className="well"><div>{ topic.introduction }</div></div> : null }
     <div>
-      {/*<div className="progress">
-        <div className="progress-bar pbar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style={{width: "60%"}}>
-          60%
-        </div>
-
-        <div className="progress-bar pbar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style={{width: "40%"}}>
-          40%
-        </div>
-      </div>*/}
       { topic.comments.filter(comm => !comm.parent).map((comment, i) => (
-        <Bubble topic={topic} comment={comment} handleUpdates={handleUpdates} key={i} user={user}/>
+        <Bubble topic={topic} comment={comment} handleUpdates={handleUpdates} key={i} user={user} root={true}/>
       ))}
       <div className="new">
         <h3> What do you think? </h3>
@@ -163,27 +152,19 @@ class Bubble extends React.Component {
     }
   }
 
-  upvoteComment(comment){
-    fetch(`/api/topics/${this.props.topic._id}/comments/${comment._id}/upvote`, {
+  upvoteComment(comment, upvote=true){
+    fetch(`/api/topics/${this.props.topic._id}/comments/${comment._id}/${upvote ? 'upvote' : 'downvote'}`, {
       credentials: 'same-origin',
-      method: "POST"
+      method: "POST",
     }).then(resp => resp.json()).then(json => this.props.handleUpdates())
   }
 
   render(){
 
-    let { comment, topic, handleUpdates,user } = this.props;
+    let { root, comment, topic, handleUpdates,user } = this.props;
 
-    return(<div className={`bubble`}>
+    return(<div className={`bubble ${ root ? 'root' : null}`}>
       <style jsx>{`
-
-        .bg-danger-light {
-            background: rgba(217, 83, 78, 0.05);
-        }
-
-        .bg-success-light {
-            background: rgba(92, 184, 92, 0.05);
-        }
 
         .action {
           margin-right: 5px;
@@ -192,32 +173,46 @@ class Bubble extends React.Component {
         .glyphicon {
           margin-right: 2px;
         }
-        .bubble {
+        .bubble.root {
             border-bottom: 1px solid #e1e1e1;
             padding: 20px;
         }
 
-        .bubble:first-child {
-        }
       `}</style>
       <div className="row">
-        <div className={`col-md-8 col-sm-8 col-lg-8 col-md-offset-2 col-sm-offset-2 col-lg-offset-2`}>
+        <div className={`${ root ? 'col-md-8 col-sm-8 col-lg-8 col-md-offset-2 col-sm-offset-2 col-lg-offset-2' : 'col-md-12 col-sm-12 col-lg-12'}`}>
           <div className={`panel ${comment.inFavor ? "panel-success" : "panel-danger"}`}>
             <div className="panel-heading">
-              { comment.inFavor ? "InFavor" : "Against"}
+              <div className="row">
+                <div className="col-md-6 col-lg-6 col-sm-6">
+                  { comment.inFavor ? "InFavor" : "Against"}
+                </div>
+                <div className="col-md-6 col-lg-6 col-sm-6 text-right">
+                  { comment.upvotes.length ?
+                    <span>{ comment.upvotes.length }<i className="glyphicon glyphicon-arrow-up" alt="upvote"/></span> : null
+                  }
+                </div>
+              </div>
             </div>
             <div className="panel-body">
               <div><strong>{ comment.user.username }: </strong></div>
               <span>{ comment.content }</span>
             </div>
             <div className="panel-footer">
-              <small className="action upvote"><a onClick={(e) => this.upvoteComment(comment)}>
-                <i className="glyphicon glyphicon-arrow-up" alt="upvote"/>
-                Upvote
-              </a></small>
-              {/*<small className="action downvote"><i className="glyphicon glyphicon-arrow-down" alt="downvote"/>Downvote</small> */}
-              <small className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>
-              <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
+              { comment.upvotes.includes(user._id) ?
+                <small className="action downvote"><a onClick={(e) => this.upvoteComment(comment, false)}>
+                  <i className="glyphicon glyphicon-arrow-up" alt="downvote"/>
+                  Remove Upvote
+                </a></small>
+                : <small className="action upvote"><a onClick={(e) => this.upvoteComment(comment)}>
+                  <i className="glyphicon glyphicon-arrow-up" alt="upvote"/>
+                  Upvote
+                </a></small>
+              }
+              { root ? [
+                <small className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>,
+                <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
+              ] : null}
               { this.deleteCommentButton(comment) }
             </div>
           </div>
@@ -235,25 +230,12 @@ class Bubble extends React.Component {
       <div className="row">
         <div className="col-md-6 col-sm-6 col-lg-6">
           { comment.children.filter(a => (a.inFavor )).map((subComment, i) => (
-            <div key={i} className="panel panel-success">
-              <div className="panel-body">
-                <div><strong>{ subComment.user.username }: </strong></div>
-                <span>{ subComment.content }</span>
-              </div>
-              <div className="panel-footer">
-                { this.deleteCommentButton(subComment)}
-              </div>
-            </div>
+            <Bubble key={i} {...this.props} comment={subComment} root={false} />
           ))}
         </div>
         <div className="col-md-6 col-sm-6 col-lg-6">
           { comment.children.filter(a => !a.inFavor).map((subComment, i) => (
-            <div key={i} className="panel panel-danger">
-              <div className="panel-body">
-                <div><strong>{ subComment.user.username }: </strong></div>
-                <span>{ subComment.content }</span>
-              </div>
-            </div>
+            <Bubble key={i} {...this.props} comment={subComment} root={false} />
           ))}
         </div>
       </div>

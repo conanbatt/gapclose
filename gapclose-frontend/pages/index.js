@@ -71,7 +71,7 @@ class CreateTopic extends React.Component {
     if(this.state.title.length > 10 && this.state.title.length < 150){
       this.setState({ invalidTitleLength: false})
     }
-    this.setState({title: event.target.value})
+    this.setState({[event.target.name]: event.target.value})
   }
 
   onSubmit(event){
@@ -84,7 +84,7 @@ class CreateTopic extends React.Component {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({title: this.state.title})
+      body: JSON.stringify({title: this.state.title, introduction: this.state.introduction })
     }).then((response)=>{
       return response.json()
     }).then((json)=>{
@@ -95,15 +95,29 @@ class CreateTopic extends React.Component {
 
   render(){
     return(<div>
-      <p>Create a new Topic </p>
+      <h4>Create a new Topic </h4>
       <form onSubmit={(e) => this.onSubmit(e)}>
         <div className="form-group">
-          <textarea type="text" className="form-control"
+          <label>Title </label>
+          <p className="text-muted"> A Good topic Title is concise, neutral and has clear InFavor/Against stances </p>
+          <input type="text" className="form-control"
             placeholder="What's on your mind?"
             value={this.state.title}
+            name="title"
             onChange={ (e) => this.onChange(e) }
             required={true}
             title="10 to 150 characters"
+            minLength="10"
+            maxLength="150"
+          />
+        </div>
+        <div className="form-group">
+          <label>Introduction</label> <small className="text-muted">(Optional)</small>
+          <textarea type="text" className="form-control"
+            placeholder="Introduction or details on the topic..."
+            value={this.state.introduction}
+            onChange={ (e) => this.onChange(e) }
+            name="introduction"
             minLength="10"
             maxLength="150"
           />
