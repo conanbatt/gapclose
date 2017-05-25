@@ -86,6 +86,13 @@ class BubbleMaker extends React.Component {
             resize: none;
             height: 80px;
         }
+        .action {
+          margin-right: 5px;
+          cursor: pointer;
+        }
+        .glyphicon {
+            margin-right: 2px;
+        }
       `}</style>
 
       { this.props.user ? <form onSubmit={(e)=>this.onSubmit(e)}>
@@ -106,12 +113,47 @@ class BubbleMaker extends React.Component {
             </div>
           </div>
           <div className="panel-footer text-right">
+            <small className="action sytax"><a onClick={(e)=> this.setState({showSyntax: !this.state.showSyntax})}>
+              <i className="glyphicon glyphicon-text-color" alt="syntax"/>
+              Syntax Help
+            </a></small>
             <input type="submit" className="btn-primary btn" value="Send" />
           </div>
         </div>
       </form> : <div className="panel panel-default"><div className="panel-body">
         <Link prefetch href="/login"><a>Log In or Create an account</a></Link> to make comments
       </div></div>}
+      { this.state.showSyntax ? <div className="syntax_helper panel panel-default">
+        <div className="panel-default">
+          <div className="panel-heading">Markdown Syntax </div>
+          <div className="panel-body">
+            <p> Currently most <a target="_blank" href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a> is supported </p>
+            <table className="table table-bordered table-striped"><tbody>
+              <tr>
+                <th>You type</th>
+                <th>You see</th>
+              </tr>
+              <tr>
+                <td>*italics*</td>
+                <td><em>italics</em></td>
+              </tr>
+              <tr>
+                <td>**bold**</td>
+                <td><strong>bold</strong></td>
+              </tr>
+              <tr>
+                <td>[Source](https://gapclose.com)</td>
+                <td><Link prefetch href="/"><a href="/">Source</a></Link></td>
+              </tr>
+              <tr>
+                <td> > Quote </td>
+                <td><blockquote>Quote</blockquote></td>
+              </tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div> : null }
+
     </div>)
   }
 
@@ -177,7 +219,7 @@ class Bubble extends React.Component {
                 </div>
                 <div className="col-md-6 col-lg-6 col-sm-6 text-right">
                   { comment.upvotes.length ?
-                    <span>{ comment.upvotes.length }<i className="glyphicon glyphicon-arrow-up" alt="upvote"/></span> : null
+                    <span>{ comment.upvotes.length }<i className="glyphicon glyphicon-arrow-up" alt="syntax"/></span> : null
                   }
                 </div>
               </div>
@@ -213,12 +255,6 @@ class Bubble extends React.Component {
                     </a>
                   </small> : null }
                 </div>
-                <div className="col-md-4 col-lg-4 col-sm-4 text-right">
-                  <small className="action sytax"><a onClick={(e)=> this.setState({showSyntax: this.state.showSyntax})}>
-                    <i className="glyphicon glyphicon-share-alt" alt="object"/>
-                    Object
-                  </a></small>
-                </div>
               </div>
             </div>
           </div>
@@ -231,6 +267,7 @@ class Bubble extends React.Component {
               handleUpdates(fn)
             }
           }/> : null}
+
         </div>
       </div>
       <div className="row">
