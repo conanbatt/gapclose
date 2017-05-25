@@ -242,8 +242,8 @@ class Bubble extends React.Component {
                     </a></small>
                   }
                   { root ? [
-                    <small className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>,
-                    <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
+                    <small key={0} className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>,
+                    <small key={1} className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
                   ] : null}
                   { user && comment.user._id == user._id && !comment.children.length ? <small className="action delete">
                     <a onClick={(e)=> {

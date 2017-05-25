@@ -39,4 +39,12 @@ CommentSchema.statics.create = async ({topicId, parentId, ...rest})=>{
   return savedComment;
 }
 
+
+CommentSchema.post("remove", async function(next){
+  const resp = await Topic.update({ _id: this.topic }, { $pull: { comments: this._id }})
+  if(this.parent){
+    const parent = await Comment.update({ _id: this.parent}, { $pull: { children: this._id}})
+  }
+})
+
 const Comment = mongoose.model('Comment', CommentSchema);
