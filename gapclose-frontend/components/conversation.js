@@ -1,7 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import Toggle from 'react-bootstrap-toggle';
+import showdown from 'showdown';
 import 'isomorphic-fetch';
+import ReactMarkdown from 'react-markdown';
 
 export default ({topic, handleUpdates, user}) => (
   <div className="conversation">
@@ -182,32 +184,42 @@ class Bubble extends React.Component {
             </div>
             <div className="panel-body">
               <div><strong>{ comment.user.username }: </strong></div>
-              <span>{ comment.content }</span>
+              <span><ReactMarkdown source={comment.content} escapeHtml={true} /></span>
             </div>
             <div className="panel-footer">
-              { comment.upvotes.includes(user._id) ?
-                <small className="action downvote"><a onClick={(e) => this.upvoteComment(comment, false)}>
-                  <i className="glyphicon glyphicon-arrow-up" alt="downvote"/>
-                  Remove Upvote
-                </a></small>
-                : <small className="action upvote"><a onClick={(e) => this.upvoteComment(comment)}>
-                  <i className="glyphicon glyphicon-arrow-up" alt="upvote"/>
-                  Upvote
-                </a></small>
-              }
-              { root ? [
-                <small className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>,
-                <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
-              ] : null}
-              { comment.user._id == this.props.user._id && !comment.children.length ? <small className="action delete">
-                <a onClick={(e)=> {
-                  let res = confirm("Are you sure you want to delete this comment?");
-                  if(res){ this.deleteComment(comment)}
-                }}>
-                  <i className="glyphicon glyphicon-remove" alt="delete"/>
-                  Delete
-                </a>
-              </small> : null }
+              <div className="row">
+                <div className="col-md-8 col-lg-8 col-sm-8">
+                  { comment.upvotes.includes(user._id) ?
+                    <small className="action downvote"><a onClick={(e) => this.upvoteComment(comment, false)}>
+                      <i className="glyphicon glyphicon-arrow-up" alt="downvote"/>
+                      Remove Upvote
+                    </a></small>
+                    : <small className="action upvote"><a onClick={(e) => this.upvoteComment(comment)}>
+                      <i className="glyphicon glyphicon-arrow-up" alt="upvote"/>
+                      Upvote
+                    </a></small>
+                  }
+                  { root ? [
+                    <small className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>,
+                    <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
+                  ] : null}
+                  { comment.user._id == this.props.user._id && !comment.children.length ? <small className="action delete">
+                    <a onClick={(e)=> {
+                      let res = confirm("Are you sure you want to delete this comment?");
+                      if(res){ this.deleteComment(comment)}
+                    }}>
+                      <i className="glyphicon glyphicon-remove" alt="delete"/>
+                      Delete
+                    </a>
+                  </small> : null }
+                </div>
+                <div className="col-md-4 col-lg-4 col-sm-4 text-right">
+                  <small className="action sytax"><a onClick={(e)=> this.setState({showSyntax: this.state.showSyntax})}>
+                    <i className="glyphicon glyphicon-share-alt" alt="object"/>
+                    Object
+                  </a></small>
+                </div>
+              </div>
             </div>
           </div>
           { this.state.showBubbleMaker ? <BubbleMaker topic={topic}
