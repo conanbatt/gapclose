@@ -150,7 +150,6 @@ class Bubble extends React.Component {
   }
 
   deleteCommentButton(comment){
-    console.log("dfq is user", comment.user._id,this.props.user._id, comment.children)
     if(comment.user._id == this.props.user._id && !comment.children.length){
       return(<small className="action delete">
         <a onClick={(e)=> {
@@ -162,6 +161,13 @@ class Bubble extends React.Component {
         </a>
       </small>)
     }
+  }
+
+  upvoteComment(comment){
+    fetch(`/api/topics/${this.props.topic._id}/comments/${comment._id}/upvote`, {
+      credentials: 'same-origin',
+      method: "POST"
+    }).then(resp => resp.json()).then(json => this.props.handleUpdates())
   }
 
   render(){
@@ -205,8 +211,11 @@ class Bubble extends React.Component {
               <span>{ comment.content }</span>
             </div>
             <div className="panel-footer">
-              {/*<small className="action upvote"><i className="glyphicon glyphicon-arrow-up" alt="upvote"/>Upvote</small>
-              <small className="action downvote"><i className="glyphicon glyphicon-arrow-down" alt="downvote"/>Downvote</small> */}
+              <small className="action upvote"><a onClick={(e) => this.upvoteComment(comment)}>
+                <i className="glyphicon glyphicon-arrow-up" alt="upvote"/>
+                Upvote
+              </a></small>
+              {/*<small className="action downvote"><i className="glyphicon glyphicon-arrow-down" alt="downvote"/>Downvote</small> */}
               <small className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>
               <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
               { this.deleteCommentButton(comment) }

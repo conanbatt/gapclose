@@ -6,6 +6,25 @@ import '../models/topic';
 const Comment = mongoose.model("Comment")
 const Topic = mongoose.model("Topic")
 
+
+/*
+export async upvote(req, res) {
+
+  if(!user){
+    res.status(401)
+    return res.json({err: "Only logged in users can upvote"})
+  }
+  try {
+    await Comment.update({ _id: comment._id}, { $addToSet: user._id})
+    res.status(200)
+    return res.json({message: "upvoted"})
+  } catch(err){
+    res.status(400)
+    return res.json({err: err})
+  }
+}
+*/
+
 export default ({ config, db }) => resource({
 
   mergeParams: true,
