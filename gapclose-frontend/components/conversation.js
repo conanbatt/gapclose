@@ -138,20 +138,6 @@ class Bubble extends React.Component {
     }).then(resp => resp.json()).then(json => this.props.handleUpdates())
   }
 
-  deleteCommentButton(comment){
-    if(comment.user._id == this.props.user._id && !comment.children.length){
-      return(<small className="action delete">
-        <a onClick={(e)=> {
-          let res = confirm("Are you sure you want to delete this comment?");
-          if(res){ this.deleteComment(comment)}
-        }}>
-          <i className="glyphicon glyphicon-remove" alt="delete"/>
-          Delete
-        </a>
-      </small>)
-    }
-  }
-
   upvoteComment(comment, upvote=true){
     fetch(`/api/topics/${this.props.topic._id}/comments/${comment._id}/${upvote ? 'upvote' : 'downvote'}`, {
       credentials: 'same-origin',
@@ -213,7 +199,15 @@ class Bubble extends React.Component {
                 <small className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>,
                 <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
               ] : null}
-              { this.deleteCommentButton(comment) }
+              { comment.user._id == this.props.user._id && !comment.children.length ? <small className="action delete">
+                <a onClick={(e)=> {
+                  let res = confirm("Are you sure you want to delete this comment?");
+                  if(res){ this.deleteComment(comment)}
+                }}>
+                  <i className="glyphicon glyphicon-remove" alt="delete"/>
+                  Delete
+                </a>
+              </small> : null }
             </div>
           </div>
           { this.state.showBubbleMaker ? <BubbleMaker topic={topic}
