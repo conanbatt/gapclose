@@ -26,7 +26,7 @@ export default ({ config, db }) => resource({
 	index({ params }, res)   {
     const topics = Topic.find({},(err, topics)=>{
       res.json({topics: topics});
-    })
+    }).sort({_id: -1})
 	},
 
 	/** POST / - Create a new entity */
