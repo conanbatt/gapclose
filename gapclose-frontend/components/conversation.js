@@ -245,7 +245,7 @@ class Bubble extends React.Component {
                     <small className="action object"><a onClick={(e)=> this.handleReply(false)}><i className="glyphicon glyphicon-share-alt" alt="object"/>Object</a></small>,
                     <small className="action support"><a onClick={(e)=> this.handleReply(true)}><i className="glyphicon glyphicon-share-alt" alt="support"/>Support</a></small>
                   ] : null}
-                  { comment.user._id == this.props.user._id && !comment.children.length ? <small className="action delete">
+                  { user && comment.user._id == user._id && !comment.children.length ? <small className="action delete">
                     <a onClick={(e)=> {
                       let res = confirm("Are you sure you want to delete this comment?");
                       if(res){ this.deleteComment(comment)}
