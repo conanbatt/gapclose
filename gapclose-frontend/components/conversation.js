@@ -189,7 +189,7 @@ class Bubble extends React.Component {
             <div className="panel-footer">
               <div className="row">
                 <div className="col-md-8 col-lg-8 col-sm-8">
-                  { comment.upvotes.includes(user._id) ?
+                  { user && comment.upvotes.includes(user._id) ?
                     <small className="action downvote"><a onClick={(e) => this.upvoteComment(comment, false)}>
                       <i className="glyphicon glyphicon-arrow-up" alt="downvote"/>
                       Remove Upvote
